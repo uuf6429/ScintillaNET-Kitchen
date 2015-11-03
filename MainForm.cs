@@ -11,9 +11,9 @@ using System.Windows.Forms;
 
 namespace ScintillaNET_Kitchen
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
 
@@ -26,15 +26,15 @@ namespace ScintillaNET_Kitchen
             scintilla2.Styles[ScintillaNET.Style.Default].Size = 10;
             scintilla2.StyleClearAll();
             scintilla2.Styles[ScintillaNET.Style.Cpp.Default].ForeColor = Color.Silver;
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Comment].ForeColor = Color.FromArgb(0, 128, 0); // Green
-            scintilla2.Styles[ScintillaNET.Style.Cpp.CommentLine].ForeColor = Color.FromArgb(0, 128, 0); // Green
-            scintilla2.Styles[ScintillaNET.Style.Cpp.CommentLineDoc].ForeColor = Color.FromArgb(128, 128, 128); // Gray
+            scintilla2.Styles[ScintillaNET.Style.Cpp.Comment].ForeColor = Color.FromArgb(0, 128, 0);
+            scintilla2.Styles[ScintillaNET.Style.Cpp.CommentLine].ForeColor = Color.FromArgb(0, 128, 0);
+            scintilla2.Styles[ScintillaNET.Style.Cpp.CommentLineDoc].ForeColor = Color.FromArgb(128, 128, 128);
             scintilla2.Styles[ScintillaNET.Style.Cpp.Number].ForeColor = Color.Olive;
             scintilla2.Styles[ScintillaNET.Style.Cpp.Word].ForeColor = Color.Blue;
             scintilla2.Styles[ScintillaNET.Style.Cpp.Word2].ForeColor = Color.Blue;
-            scintilla2.Styles[ScintillaNET.Style.Cpp.String].ForeColor = Color.FromArgb(163, 21, 21); // Red
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Character].ForeColor = Color.FromArgb(163, 21, 21); // Red
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Verbatim].ForeColor = Color.FromArgb(163, 21, 21); // Red
+            scintilla2.Styles[ScintillaNET.Style.Cpp.String].ForeColor = Color.FromArgb(163, 21, 21);
+            scintilla2.Styles[ScintillaNET.Style.Cpp.Character].ForeColor = Color.FromArgb(163, 21, 21);
+            scintilla2.Styles[ScintillaNET.Style.Cpp.Verbatim].ForeColor = Color.FromArgb(163, 21, 21);
             scintilla2.Styles[ScintillaNET.Style.Cpp.StringEol].BackColor = Color.Pink;
             scintilla2.Styles[ScintillaNET.Style.Cpp.Operator].ForeColor = Color.Purple;
             scintilla2.Styles[ScintillaNET.Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
@@ -121,27 +121,33 @@ namespace ScintillaNET_Kitchen
         {
             scintilla1.Lexer = (ScintillaNET.Lexer)Enum.Parse(typeof(ScintillaNET.Lexer), comboBox1.Text);
 
-            dataGridView1.Rows.Clear();
+            comboBox2.Items.Clear();
 
             var lexerType = Type.GetType(typeof(ScintillaNET.Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + comboBox1.Text));
 
             if (lexerType != null)
             {
-                dataGridView1.Rows
+                comboBox2.Items
                     .AddRange(
-                        this
-                            .GetLexerStyles(scintilla1.Lexer)
-                            .Select(m =>
-                            {
-                                var row = new DataGridViewRow();
-                                row.HeaderCell.Value = m.Key.ToString();
-                                row.Cells.Add(new DataGridViewTextBoxCell() { Value = m.Value });
-                                return row;
-                            })
+                        this.GetLexerStyles(scintilla1.Lexer)
+                            .Select(m => m.Key + ": " + m.Value)
                             .ToArray()
                     );
             }
 
+            propertyGrid1.SelectedObject = null;
+
+            this.UpdateResult();
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var pos = Int32.Parse(comboBox2.Text.Split(new char[] { ':' })[0]);
+            propertyGrid1.SelectedObject = scintilla1.Styles[pos];
+        }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
             this.UpdateResult();
         }
     }
