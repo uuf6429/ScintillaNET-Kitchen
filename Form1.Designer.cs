@@ -1,4 +1,4 @@
-﻿namespace Scintilla_Theme_Designer
+﻿namespace ScintillaNET_Kitchen
 {
     partial class Form1
     {

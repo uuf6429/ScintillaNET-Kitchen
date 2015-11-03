@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Scintilla_Theme_Designer
+namespace ScintillaNET_Kitchen
 {
     public partial class Form1 : Form
     {
