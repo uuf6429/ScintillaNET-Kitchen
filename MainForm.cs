@@ -74,6 +74,22 @@ namespace ScintillaNET_Kitchen
                 }
             }
 
+            Dictionary<int, string> keywordSets = new Dictionary<int, string>();
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                var keywords = (row.Cells[1].Value ?? "").ToString();
+                this.SetKeywords(row.Index, keywords);
+                if (keywords != "") keywordSets.Add(row.Index, keywords);
+            }
+
+            if (keywordSets.Any())
+            {
+                text.AppendLine();
+                foreach (var item in keywordSets)
+                    text.AppendLine("scintilla1.SetKeywords(" + item.Key + ", @\"" + item.Value + "\");");
+            }
+
             scintilla2.ReadOnly = false;
             scintilla2.Text = text.ToString();
             scintilla2.ReadOnly = true;
@@ -82,9 +98,9 @@ namespace ScintillaNET_Kitchen
         private Dictionary<string, Func<object, string>> typeSerializers = new Dictionary<string, Func<object, string>>()
         {
             { "null", m => null },
-            { typeof(Color).FullName, m => ((Color)m).IsNamedColor ? "Color." + ((Color)m).Name : "Color.FromName(\"" + ((Color)m).Name + "\")" },
+            { typeof(Color).FullName, m => ((Color)m).IsNamedColor ? "Color." + ((Color)m).Name : "Color.FromName(@\"" + ((Color)m).Name + "\")" },
             { typeof(Boolean).FullName, m => (Boolean)m ? "true" : "false" },
-            { typeof(String).FullName, m => "\"" + m.ToString() + "\"" },
+            { typeof(String).FullName, m => "@\"" + m.ToString() + "\"" },
             { typeof(int).FullName, m => m.ToString() },
             { typeof(float).FullName, m => m.ToString() },
             { typeof(ScintillaNET.StyleCase).FullName, m => "ScintillaNET.StyleCase." + Enum.GetName(typeof(ScintillaNET.StyleCase), m) },
@@ -137,7 +153,44 @@ namespace ScintillaNET_Kitchen
 
             propertyGrid1.SelectedObject = null;
 
+            dataGridView1.Rows.Clear();
+
+            dataGridView1.Rows.AddRange(
+                scintilla1
+                    .DescribeKeywordSets()
+                    .Split(new string[] { "\n" }, StringSplitOptions.None)
+                    .Select((s, i) =>
+                    {
+                        var row = new DataGridViewRow();
+                        row.Cells.Add(new DataGridViewTextBoxCell() { Value = s });
+                        row.Cells.Add(new DataGridViewTextBoxCell() { Value = this.GetKeywords(i).Trim() });
+                        return row;
+                    })
+                    .ToArray()
+            );
+
             this.UpdateResult();
+        }
+
+        private Dictionary<string, string> keywords = new Dictionary<string, string>();
+
+        private string GetKeywordsKey(int sid)
+        {
+            return Enum.GetName(typeof(ScintillaNET.Lexer), scintilla1.Lexer) + "_" + sid;
+        }
+
+        private void SetKeywords(int sid, string keywords)
+        {
+            var key = this.GetKeywordsKey(sid);
+            if (!this.keywords.ContainsKey(key)) this.keywords.Add(key, "");
+            this.keywords[key] = keywords;
+            scintilla1.SetKeywords(sid, keywords == "" ? " " : keywords);
+        }
+
+        private string GetKeywords(int sid)
+        {
+            var key = this.GetKeywordsKey(sid);
+            return this.keywords.ContainsKey(key) ? this.keywords[key] : "";
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
@@ -147,6 +200,11 @@ namespace ScintillaNET_Kitchen
         }
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            this.UpdateResult();
+        }
+
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             this.UpdateResult();
         }
