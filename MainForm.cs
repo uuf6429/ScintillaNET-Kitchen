@@ -61,8 +61,8 @@ namespace ScintillaNET_Kitchen
             {
                 foreach (var styleKey in styleKeys)
                 {
-                    var oldValue = styleType.GetProperty(styleKey).GetValue(defaultStyle);
-                    var newValue = styleType.GetProperty(styleKey).GetValue(scintilla1.Styles[item.Key]);
+                    var oldValue = styleType.GetProperty(styleKey).GetValue(defaultStyle, null);
+                    var newValue = styleType.GetProperty(styleKey).GetValue(scintilla1.Styles[item.Key], null);
                     if (oldValue.ToString() != newValue.ToString() && !(styleKey == "Font" && newValue.ToString() == ""))
                     {
                         var serializedValue = this.SerializeValue(newValue);
