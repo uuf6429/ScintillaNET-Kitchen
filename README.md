@@ -6,9 +6,7 @@ Cook your own recipes..!
 Introduction
 ------------
 
-[![Build Status](https://scrutinizer-ci.com/g/uuf6429/httpdmon/badges/build.png?b=master)](https://scrutinizer-ci.com/g/uuf6429/httpdmon/build-status/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/uuf6429/httpdmon/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/uuf6429/httpdmon/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/uuf6429/httpdmon/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/uuf6429/httpdmon/?branch=master)
+[![Build Status](https://travis-ci.org/uuf6429/ScintillaNET-Kitchen.svg?branch=master)](https://travis-ci.org/uuf6429/ScintillaNET-Kitchen)
 
 ScintillaNET-Kitchen is an application that not only demonstrates how Scintilla works, but it also (and most importantly) helps you with designing how scintilla should look like.
 
