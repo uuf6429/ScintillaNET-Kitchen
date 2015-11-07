@@ -1,2 +1,9 @@
-﻿language: csharp
-solution: ./ScintillaNET-Kitchen.sln
+## Travis CI Integration
+
+language: csharp
+
+install:
+  - nuget restore ScintillaNET-Kitchen.sln
+
+script:
+  - xbuild ScintillaNET-Kitchen.sln
