@@ -189,6 +189,7 @@
             this.resetStylesToolStripMenuItem.Size = new System.Drawing.Size(286, 38);
             this.resetStylesToolStripMenuItem.Text = "Reset Styles";
             this.resetStylesToolStripMenuItem.ToolTipText = "Reset all style changes";
+            this.resetStylesToolStripMenuItem.Click += new System.EventHandler(this.resetStylesToolStripMenuItem_Click);
             // 
             // prefillForeColorToolStripMenuItem
             // 
@@ -196,6 +197,7 @@
             this.prefillForeColorToolStripMenuItem.Size = new System.Drawing.Size(286, 38);
             this.prefillForeColorToolStripMenuItem.Text = "Prefill ForeColor";
             this.prefillForeColorToolStripMenuItem.ToolTipText = "Fill ForeColor with different values for each style";
+            this.prefillForeColorToolStripMenuItem.Click += new System.EventHandler(this.prefillForeColorToolStripMenuItem_Click);
             // 
             // tabPage2
             // 

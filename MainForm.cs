@@ -53,10 +53,7 @@ namespace ScintillaNET_Kitchen
             var defaultStyle = scintilla1.Styles[ScintillaNET.Style.Default];
             var styleType = defaultStyle.GetType();
 
-            // TODO maybe get this from styleType?
-            var styleKeys = new string[] {
-                "BackColor", "Bold", "Case", "FillLine", "Font", "ForeColor", "Hotspot", "Italic", "Size", "SizeF", "Underline", "Visible", "Weight",
-            };
+            // TODO somehow force scintilla to refresh (otherwise ui doesn't match user selection for some reason)
 
             text.AppendLine("scintilla1.Lexer = ScintillaNET.Lexer." + lexerName + ";");
             text.AppendLine("");
@@ -65,8 +62,9 @@ namespace ScintillaNET_Kitchen
             {
                 foreach (var styleKey in styleKeys)
                 {
-                    var oldValue = styleType.GetProperty(styleKey).GetValue(defaultStyle, null);
-                    var newValue = styleType.GetProperty(styleKey).GetValue(scintilla1.Styles[item.Key], null);
+                    var prop = styleType.GetProperty(styleKey);
+                    var oldValue = prop.GetValue(defaultStyle, null);
+                    var newValue = prop.GetValue(scintilla1.Styles[item.Key], null);
                     if (oldValue.ToString() != newValue.ToString() && !(styleKey == "Font" && newValue.ToString() == ""))
                     {
                         var serializedValue = this.SerializeValue(newValue);
@@ -78,7 +76,7 @@ namespace ScintillaNET_Kitchen
                 }
             }
 
-            Dictionary<int, string> keywordSets = new Dictionary<int, string>();
+            var keywordSets = new Dictionary<int, string>();
 
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
@@ -140,11 +138,11 @@ namespace ScintillaNET_Kitchen
                         fi => fi.Name
                     );
         }
-
-        private string GetKeywordsKey(int sid)
-        {
-            return Enum.GetName(typeof(ScintillaNET.Lexer), scintilla1.Lexer) + "_" + sid;
-        }
+        
+        // TODO maybe get this from styleType?
+        private string[] styleKeys = new string[] {
+                "BackColor", "Bold", "Case", "FillLine", "Font", "ForeColor", "Hotspot", "Italic", "Size", "SizeF", "Underline", "Visible", "Weight",
+        };
 
         #endregion
 
@@ -208,6 +206,41 @@ namespace ScintillaNET_Kitchen
         private void menuStrip1_Resize(object sender, EventArgs e)
         {
             toolStripComboBox1.Width = menuStrip1.Width - toolStripMenuItem1.Width - 4;
+        }
+
+        private void resetStylesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var defaultStyle = scintilla1.Styles[ScintillaNET.Style.Default];
+            var styleType = typeof(ScintillaNET.Style);
+
+            foreach (var item in this.GetLexerStyles(scintilla1.Lexer))
+            {
+                foreach (var styleKey in styleKeys)
+                {
+                    var prop = styleType.GetProperty(styleKey);
+                    prop.SetValue(scintilla1.Styles[item.Key], prop.GetValue(defaultStyle, null), null);
+                }
+            }
+
+            this.UpdateResult();
+        }
+
+        private Random colorRng = new Random(2);
+
+        private void prefillForeColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var styleType = typeof(ScintillaNET.Style);
+
+            foreach (var item in this.GetLexerStyles(scintilla1.Lexer).Where(style => style.Value != "Default"))
+            {
+                scintilla1.Styles[item.Key].ForeColor = Color.FromArgb(
+                    (byte)(colorRng.Next(128)),
+                    (byte)(colorRng.Next(128)),
+                    (byte)(colorRng.Next(128))
+                );
+            }
+
+            this.UpdateResult();
         }
 
         #endregion

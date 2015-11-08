@@ -61,7 +61,8 @@ namespace ScintillaNET_Kitchen
             if (lineMarginChars != this.maxLineNumberCharLength)
             {
                 const int padding = 2;
-                this.Margins[0].Width = this.TextWidth(Style.LineNumber, new string('9', lineMarginChars + 1)) + padding;
+                this.Margins[0].Width = !this.ShowLineMargin ? 0
+                    : this.TextWidth(Style.LineNumber, new string('9', lineMarginChars + 1)) + padding;
                 this.maxLineNumberCharLength = lineMarginChars;
             }
         }
