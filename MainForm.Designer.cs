@@ -28,14 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.scintilla1 = new ScintillaNET.Scintilla();
-            this.scintilla2 = new ScintillaNET.Scintilla();
+            this.scintilla1 = new ScintillaNET_Kitchen.ScintillaEx();
+            this.scintilla2 = new ScintillaNET_Kitchen.ScintillaEx();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetStylesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.prefillForeColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -44,6 +48,7 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -58,11 +63,13 @@
             // 
             // scintilla1
             // 
+            this.scintilla1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.scintilla1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scintilla1.Lexer = ScintillaNET.Lexer.Null;
-            this.scintilla1.Location = new System.Drawing.Point(0, 0);
+            this.scintilla1.Location = new System.Drawing.Point(9, 9);
             this.scintilla1.Margin = new System.Windows.Forms.Padding(6);
             this.scintilla1.Name = "scintilla1";
+            this.scintilla1.ShowLineMargin = true;
             this.scintilla1.Size = new System.Drawing.Size(982, 600);
             this.scintilla1.TabIndex = 0;
             this.scintilla1.Text = "\r\n// Paste some sample code here!\r\n\r\n";
@@ -70,15 +77,16 @@
             // 
             // scintilla2
             // 
+            this.scintilla2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.scintilla2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scintilla2.Lexer = ScintillaNET.Lexer.Cpp;
-            this.scintilla2.Location = new System.Drawing.Point(0, 0);
+            this.scintilla2.Location = new System.Drawing.Point(9, 9);
             this.scintilla2.Margin = new System.Windows.Forms.Padding(6);
             this.scintilla2.Name = "scintilla2";
             this.scintilla2.ReadOnly = true;
-            this.scintilla2.Size = new System.Drawing.Size(982, 187);
+            this.scintilla2.ShowLineMargin = false;
+            this.scintilla2.Size = new System.Drawing.Size(982, 169);
             this.scintilla2.TabIndex = 1;
-            this.scintilla2.Text = "// Generated code appears here";
             this.scintilla2.UseTabs = false;
             // 
             // comboBox1
@@ -110,25 +118,11 @@
             // 
             this.propertyGrid1.CategoryForeColor = System.Drawing.SystemColors.InactiveCaptionText;
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(3, 36);
+            this.propertyGrid1.Location = new System.Drawing.Point(3, 58);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(295, 644);
+            this.propertyGrid1.Size = new System.Drawing.Size(295, 622);
             this.propertyGrid1.TabIndex = 5;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Items.AddRange(new object[] {
-            "Null"});
-            this.comboBox2.Location = new System.Drawing.Point(3, 3);
-            this.comboBox2.Margin = new System.Windows.Forms.Padding(6);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(295, 33);
-            this.comboBox2.TabIndex = 6;
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // tabControl1
             // 
@@ -146,7 +140,7 @@
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.propertyGrid1);
-            this.tabPage1.Controls.Add(this.comboBox2);
+            this.tabPage1.Controls.Add(this.menuStrip1);
             this.tabPage1.Location = new System.Drawing.Point(8, 39);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -155,13 +149,61 @@
             this.tabPage1.Text = "Styles";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.AllowMerge = false;
+            this.menuStrip1.AutoSize = false;
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripComboBox1,
+            this.toolStripMenuItem1});
+            this.menuStrip1.Location = new System.Drawing.Point(3, 3);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(2);
+            this.menuStrip1.Size = new System.Drawing.Size(295, 55);
+            this.menuStrip1.TabIndex = 8;
+            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.Resize += new System.EventHandler(this.menuStrip1_Resize);
+            // 
+            // toolStripComboBox1
+            // 
+            this.toolStripComboBox1.AutoSize = false;
+            this.toolStripComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.toolStripComboBox1.Name = "toolStripComboBox1";
+            this.toolStripComboBox1.Size = new System.Drawing.Size(230, 40);
+            this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox1_SelectedIndexChanged);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.resetStylesToolStripMenuItem,
+            this.prefillForeColorToolStripMenuItem});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(42, 51);
+            this.toolStripMenuItem1.Text = "...";
+            // 
+            // resetStylesToolStripMenuItem
+            // 
+            this.resetStylesToolStripMenuItem.Name = "resetStylesToolStripMenuItem";
+            this.resetStylesToolStripMenuItem.Size = new System.Drawing.Size(286, 38);
+            this.resetStylesToolStripMenuItem.Text = "Reset Styles";
+            this.resetStylesToolStripMenuItem.ToolTipText = "Reset all style changes";
+            // 
+            // prefillForeColorToolStripMenuItem
+            // 
+            this.prefillForeColorToolStripMenuItem.Name = "prefillForeColorToolStripMenuItem";
+            this.prefillForeColorToolStripMenuItem.Size = new System.Drawing.Size(286, 38);
+            this.prefillForeColorToolStripMenuItem.Text = "Prefill ForeColor";
+            this.prefillForeColorToolStripMenuItem.ToolTipText = "Fill ForeColor with different values for each style";
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.dataGridView1);
             this.tabPage2.Location = new System.Drawing.Point(8, 39);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(408, 693);
+            this.tabPage2.Size = new System.Drawing.Size(301, 683);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Keywords";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -182,7 +224,7 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowTemplate.Height = 33;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(402, 687);
+            this.dataGridView1.Size = new System.Drawing.Size(295, 677);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
             // 
@@ -203,6 +245,7 @@
             // 
             // splitContainer1
             // 
+            this.splitContainer1.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
@@ -210,11 +253,12 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.Control;
             this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(9);
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.splitContainer1.Panel2.Controls.Add(this.label1);
             this.splitContainer1.Panel2.Controls.Add(this.tabControl1);
             this.splitContainer1.Panel2.Controls.Add(this.comboBox1);
@@ -224,21 +268,26 @@
             // 
             // splitContainer2
             // 
+            this.splitContainer2.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.splitContainer2.Location = new System.Drawing.Point(9, 9);
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.BackColor = System.Drawing.SystemColors.Control;
             this.splitContainer2.Panel1.Controls.Add(this.scintilla1);
+            this.splitContainer2.Panel1.Padding = new System.Windows.Forms.Padding(9);
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.splitContainer2.Panel2.Controls.Add(this.scintilla2);
-            this.splitContainer2.Size = new System.Drawing.Size(982, 791);
-            this.splitContainer2.SplitterDistance = 600;
+            this.splitContainer2.Panel2.Padding = new System.Windows.Forms.Padding(9);
+            this.splitContainer2.Size = new System.Drawing.Size(1000, 809);
+            this.splitContainer2.SplitterDistance = 618;
             this.splitContainer2.TabIndex = 10;
             // 
             // MainForm
@@ -247,12 +296,15 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1347, 809);
             this.Controls.Add(this.splitContainer1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ScintillaNET Theme Designer";
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -270,12 +322,11 @@
 
         #endregion
 
-        private ScintillaNET.Scintilla scintilla1;
-        private ScintillaNET.Scintilla scintilla2;
+        private ScintillaEx scintilla1;
+        private ScintillaEx scintilla2;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
-        private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -284,6 +335,11 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem resetStylesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem prefillForeColorToolStripMenuItem;
     }
 }
 

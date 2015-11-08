@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ScintillaNET_Kitchen
 {
     public partial class MainForm : Form
     {
+        #region Constructors
+
         public MainForm()
         {
             InitializeComponent();
@@ -42,7 +42,11 @@ namespace ScintillaNET_Kitchen
             this.UpdateResult();
         }
 
-        protected void UpdateResult()
+        #endregion
+
+        #region Public Methods
+
+        public void UpdateResult()
         {
             var text = new StringBuilder();
             var lexerName = Enum.GetName(typeof(ScintillaNET.Lexer), scintilla1.Lexer);
@@ -79,7 +83,7 @@ namespace ScintillaNET_Kitchen
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 var keywords = (row.Cells[1].Value ?? "").ToString();
-                this.SetKeywords(row.Index, keywords);
+                scintilla1.SetKeywords(row.Index, keywords);
                 if (keywords != "") keywordSets.Add(row.Index, keywords);
             }
 
@@ -94,6 +98,10 @@ namespace ScintillaNET_Kitchen
             scintilla2.Text = text.ToString();
             scintilla2.ReadOnly = true;
         }
+
+        #endregion
+
+        #region Utility Methods
 
         private Dictionary<string, Func<object, string>> typeSerializers = new Dictionary<string, Func<object, string>>()
         {
@@ -133,17 +141,26 @@ namespace ScintillaNET_Kitchen
                     );
         }
 
+        private string GetKeywordsKey(int sid)
+        {
+            return Enum.GetName(typeof(ScintillaNET.Lexer), scintilla1.Lexer) + "_" + sid;
+        }
+
+        #endregion
+
+        #region Event Handlers
+
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             scintilla1.Lexer = (ScintillaNET.Lexer)Enum.Parse(typeof(ScintillaNET.Lexer), comboBox1.Text);
 
-            comboBox2.Items.Clear();
+            toolStripComboBox1.Items.Clear();
 
             var lexerType = Type.GetType(typeof(ScintillaNET.Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + comboBox1.Text));
 
             if (lexerType != null)
             {
-                comboBox2.Items
+                toolStripComboBox1.Items
                     .AddRange(
                         this.GetLexerStyles(scintilla1.Lexer)
                             .Select(m => m.Key + ": " + m.Value)
@@ -163,7 +180,7 @@ namespace ScintillaNET_Kitchen
                     {
                         var row = new DataGridViewRow();
                         row.Cells.Add(new DataGridViewTextBoxCell() { Value = s });
-                        row.Cells.Add(new DataGridViewTextBoxCell() { Value = this.GetKeywords(i).Trim() });
+                        row.Cells.Add(new DataGridViewTextBoxCell() { Value = scintilla1.GetKeywords(i).Trim() });
                         return row;
                     })
                     .ToArray()
@@ -172,30 +189,9 @@ namespace ScintillaNET_Kitchen
             this.UpdateResult();
         }
 
-        private Dictionary<string, string> keywords = new Dictionary<string, string>();
-
-        private string GetKeywordsKey(int sid)
+        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            return Enum.GetName(typeof(ScintillaNET.Lexer), scintilla1.Lexer) + "_" + sid;
-        }
-
-        private void SetKeywords(int sid, string keywords)
-        {
-            var key = this.GetKeywordsKey(sid);
-            if (!this.keywords.ContainsKey(key)) this.keywords.Add(key, "");
-            this.keywords[key] = keywords;
-            scintilla1.SetKeywords(sid, keywords == "" ? " " : keywords);
-        }
-
-        private string GetKeywords(int sid)
-        {
-            var key = this.GetKeywordsKey(sid);
-            return this.keywords.ContainsKey(key) ? this.keywords[key] : "";
-        }
-
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var pos = Int32.Parse(comboBox2.Text.Split(new char[] { ':' })[0]);
+            var pos = Int32.Parse(toolStripComboBox1.Text.Split(new char[] { ':' })[0]);
             propertyGrid1.SelectedObject = scintilla1.Styles[pos];
         }
 
@@ -208,5 +204,12 @@ namespace ScintillaNET_Kitchen
         {
             this.UpdateResult();
         }
+
+        private void menuStrip1_Resize(object sender, EventArgs e)
+        {
+            toolStripComboBox1.Width = menuStrip1.Width - toolStripMenuItem1.Width - 4;
+        }
+
+        #endregion
     }
 }
