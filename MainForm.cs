@@ -104,7 +104,7 @@ namespace ScintillaNET_Kitchen
         private Dictionary<string, Func<object, string>> typeSerializers = new Dictionary<string, Func<object, string>>()
         {
             { "null", m => null },
-            { typeof(Color).FullName, m => ((Color)m).IsNamedColor ? "Color." + ((Color)m).Name : "Color.FromName(@\"" + ((Color)m).Name + "\")" },
+            { typeof(Color).FullName, m => ((Color)m).IsNamedColor ? "Color." + ((Color)m).Name : "Color.FromArgb(" + ((Color)m).ToArgb() + ")" },
             { typeof(Boolean).FullName, m => (Boolean)m ? "true" : "false" },
             { typeof(String).FullName, m => "@\"" + m.ToString() + "\"" },
             { typeof(int).FullName, m => m.ToString() },
@@ -230,15 +230,23 @@ namespace ScintillaNET_Kitchen
         private void prefillForeColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var styleType = typeof(ScintillaNET.Style);
+            string[] colourValues = new string[] {
+                "FF0000", "00FF00", "0000FF", "FFFF00", "FF00FF", "00FFFF", "800000",
+                "008000", "000080", "808000", "800080", "008080", "808080", "C00000",
+                "00C000", "0000C0", "C0C000", "C000C0", "00C0C0", "C0C0C0", "400000",
+                "004000", "000040", "404000", "400040", "004040", "404040", "E0E0E0",
+                "200000", "002000", "000020", "202000", "200020", "002020", "202020",
+                "600000", "006000", "000060", "606000", "600060", "006060", "606060",
+                "A00000", "00A000", "0000A0", "A0A000", "A000A0", "00A0A0", "A0A0A0",
+                "E00000", "00E000", "0000E0", "E0E000", "E000E0", "00E0E0", "000000",
+            };
 
-            foreach (var item in this.GetLexerStyles(scintilla1.Lexer).Where(style => style.Value != "Default"))
-            {
-                scintilla1.Styles[item.Key].ForeColor = Color.FromArgb(
-                    (byte)(colorRng.Next(128)),
-                    (byte)(colorRng.Next(128)),
-                    (byte)(colorRng.Next(128))
-                );
-            }
+            this.GetLexerStyles(scintilla1.Lexer)
+                .Where(s => s.Value != "Default")
+                .All(s => {
+                    scintilla1.Styles[s.Key].ForeColor = ColorTranslator.FromHtml("#" + colourValues[s.Key]);
+                    return true;
+                });
 
             this.UpdateResult();
         }
