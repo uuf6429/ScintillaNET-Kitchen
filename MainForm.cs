@@ -18,8 +18,16 @@ namespace ScintillaNET_Kitchen
             InitializeComponent();
 
             scintilla1.Text = "";
-            comboBox1.Items.AddRange(Enum.GetNames(typeof(ScintillaNET.Lexer)));
-            comboBox1.Text = "Null";
+
+            lexerToolStripMenuItem.DropDownItems.AddRange(
+                Enum.GetNames(typeof(ScintillaNET.Lexer))
+                    .OrderBy(m => m)
+                    .Select(m => new ToolStripMenuRadioItem(m)
+                    {
+                        CheckState = m == "Null" ? CheckState.Checked : CheckState.Unchecked
+                    })
+                    .ToArray()
+            );
 
             scintilla2.StyleResetDefault();
             scintilla2.Styles[ScintillaNET.Style.Default].Font = "Consolas";
@@ -148,13 +156,14 @@ namespace ScintillaNET_Kitchen
 
         #region Event Handlers
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void lexerToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            scintilla1.Lexer = (ScintillaNET.Lexer)Enum.Parse(typeof(ScintillaNET.Lexer), comboBox1.Text);
+            var currentLexer = e.ClickedItem.Text;
+            scintilla1.Lexer = (ScintillaNET.Lexer)Enum.Parse(typeof(ScintillaNET.Lexer), currentLexer);
 
             toolStripComboBox1.Items.Clear();
 
-            var lexerType = Type.GetType(typeof(ScintillaNET.Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + comboBox1.Text));
+            var lexerType = Type.GetType(typeof(ScintillaNET.Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + currentLexer));
 
             if (lexerType != null)
             {
@@ -252,5 +261,35 @@ namespace ScintillaNET_Kitchen
         }
 
         #endregion
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
