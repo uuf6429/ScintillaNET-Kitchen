@@ -156,6 +156,56 @@ namespace ScintillaNET_Kitchen
 
         #region Event Handlers
 
+        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var pos = Int32.Parse(toolStripComboBox1.Text.Split(new char[] { ':' })[0]);
+            propertyGrid1.SelectedObject = scintilla1.Styles[pos];
+        }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            this.UpdateResult();
+        }
+
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            this.UpdateResult();
+        }
+
+        private void menuStrip1_Resize(object sender, EventArgs e)
+        {
+            toolStripComboBox1.Width = menuStrip1.Width - toolStripMenuItem1.Width - 4;
+        }
+
+        #endregion
+
+        #region Menu Event Handlers
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void lexerToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             var currentLexer = e.ClickedItem.Text;
@@ -196,25 +246,9 @@ namespace ScintillaNET_Kitchen
             this.UpdateResult();
         }
 
-        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var pos = Int32.Parse(toolStripComboBox1.Text.Split(new char[] { ':' })[0]);
-            propertyGrid1.SelectedObject = scintilla1.Styles[pos];
-        }
 
-        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
-        {
-            this.UpdateResult();
-        }
-
-        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            this.UpdateResult();
-        }
-
-        private void menuStrip1_Resize(object sender, EventArgs e)
-        {
-            toolStripComboBox1.Width = menuStrip1.Width - toolStripMenuItem1.Width - 4;
         }
 
         private void resetStylesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -261,35 +295,5 @@ namespace ScintillaNET_Kitchen
         }
 
         #endregion
-
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
