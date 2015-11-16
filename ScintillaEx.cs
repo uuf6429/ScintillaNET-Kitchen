@@ -1,12 +1,10 @@
 ﻿using ScintillaNET;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ScintillaNET_Kitchen
 {
-    class ScintillaEx : Scintilla
+    public class ScintillaEx : Scintilla
     {
         #region Constructors & Private Fields
 
