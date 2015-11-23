@@ -220,7 +220,6 @@ namespace ScintillaNET_Kitchen
                     Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Warning
                 );
             }
-            // TODO show error message if errors.Any()
         }
 
         #endregion
@@ -245,7 +244,7 @@ namespace ScintillaNET_Kitchen
 
         private void menuStrip1_Resize(object sender, EventArgs e)
         {
-            toolStripComboBox1.Width = menuStrip1.Width - toolStripMenuItem1.Width - 4;
+            toolStripComboBox1.Width = menuStrip1.Width - toolStripMenuItem1.Width - 8;
         }
 
         #endregion
@@ -254,7 +253,19 @@ namespace ScintillaNET_Kitchen
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            var defaultStyle = scintilla1.Styles[ScintillaNET.Style.Default];
+            var styleType = typeof(ScintillaNET.Style);
 
+            foreach (var item in this.GetLexerStyles(scintilla1.Lexer))
+            {
+                foreach (var styleKey in styleKeys)
+                {
+                    var prop = styleType.GetProperty(styleKey);
+                    prop.SetValue(scintilla1.Styles[item.Key], prop.GetValue(defaultStyle, null), null);
+                }
+            }
+
+            this.UpdateResult();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -301,7 +312,7 @@ namespace ScintillaNET_Kitchen
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            Application.Exit();
         }
 
         private void lexerToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -346,24 +357,7 @@ namespace ScintillaNET_Kitchen
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void resetStylesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var defaultStyle = scintilla1.Styles[ScintillaNET.Style.Default];
-            var styleType = typeof(ScintillaNET.Style);
-
-            foreach (var item in this.GetLexerStyles(scintilla1.Lexer))
-            {
-                foreach (var styleKey in styleKeys)
-                {
-                    var prop = styleType.GetProperty(styleKey);
-                    prop.SetValue(scintilla1.Styles[item.Key], prop.GetValue(defaultStyle, null), null);
-                }
-            }
-
-            this.UpdateResult();
+            new AboutForm().ShowDialog();
         }
 
         private Random colorRng = new Random(2);
