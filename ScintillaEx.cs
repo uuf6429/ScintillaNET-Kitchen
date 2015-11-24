@@ -41,7 +41,7 @@ namespace ScintillaNET_Kitchen
         public new void SetKeywords(int sid, string keywords)
         {
             this.keywords[sid] = keywords;
-            base.SetKeywords(sid, keywords == "" ? " " : keywords);
+            base.SetKeywords(sid, String.IsNullOrEmpty(keywords) ? " " : keywords);
         }
 
         public string GetKeywords(int sid)

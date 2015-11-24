@@ -78,7 +78,7 @@ namespace ScintillaNET_Kitchen
                     var prop = styleType.GetProperty(styleKey);
                     var oldValue = prop.GetValue(defaultStyle, null);
                     var newValue = prop.GetValue(scintilla1.Styles[item.Key], null);
-                    if (oldValue.ToString() != newValue.ToString() && !(styleKey == "Font" && newValue.ToString() == ""))
+                    if (oldValue.ToString() != newValue.ToString() && !(styleKey == "Font" && String.IsNullOrEmpty(newValue.ToString())))
                     {
                         var serializedValue = this.SerializeValue(newValue);
                         if (serializedValue != null)
@@ -95,7 +95,7 @@ namespace ScintillaNET_Kitchen
             {
                 var keywords = (row.Cells[1].Value ?? "").ToString();
                 scintilla1.SetKeywords(row.Index, keywords);
-                if (keywords != "") keywordSets.Add(row.Index, keywords);
+                if (String.IsNullOrEmpty(keywords)) keywordSets.Add(row.Index, keywords);
             }
 
             if (keywordSets.Any())
@@ -360,11 +360,8 @@ namespace ScintillaNET_Kitchen
             new AboutForm().ShowDialog();
         }
 
-        private Random colorRng = new Random(2);
-
         private void prefillForeColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var styleType = typeof(ScintillaNET.Style);
             string[] colourValues = new string[] {
                 "FF0000", "00FF00", "0000FF", "FFFF00", "FF00FF", "00FFFF", "800000",
                 "008000", "000080", "808000", "800080", "008080", "808080", "C00000",
