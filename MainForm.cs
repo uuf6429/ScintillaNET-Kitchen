@@ -102,7 +102,8 @@ namespace ScintillaNET_Kitchen
             {
                 text.AppendLine();
                 foreach (var item in keywordSets)
-                    text.AppendLine("scintilla1.SetKeywords(" + item.Key + ", @\"" + item.Value + "\");");
+                    if (!String.IsNullOrEmpty(item.Value))
+                        text.AppendLine("scintilla1.SetKeywords(" + item.Key + ", @\"" + item.Value + "\");");
             }
 
             scintilla2.ReadOnly = false;

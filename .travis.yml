@@ -7,3 +7,9 @@ install:
 
 script:
   - xbuild ScintillaNET-Kitchen.sln
+
+before_install:
+  - pip install codecov
+
+after_success:
+  - codecov
