@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
-namespace ScintillaNET_Kitchen
+namespace ScintillaNET_Kitchen.Forms
 {
     public partial class AboutForm : Form
     {

@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ScintillaNET_Kitchen
+namespace ScintillaNET_Kitchen.Forms
 {
     public partial class MainForm : Form
     {

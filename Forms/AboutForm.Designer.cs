@@ -1,4 +1,4 @@
-﻿namespace ScintillaNET_Kitchen
+﻿namespace ScintillaNET_Kitchen.Forms
 {
     partial class AboutForm
     {

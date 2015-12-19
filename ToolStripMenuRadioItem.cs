@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace ScintillaNET_Kitchen
 {
-    class ToolStripMenuRadioItem : ToolStripMenuItem
+    public class ToolStripMenuRadioItem : ToolStripMenuItem
     {
         #region Constructors
 
@@ -57,7 +57,6 @@ namespace ScintillaNET_Kitchen
             this.Initialize();
         }
 
-
         #endregion
 
         private void Initialize()
@@ -80,9 +79,8 @@ namespace ScintillaNET_Kitchen
             // find previous items
             current = this;
             while (
-                    (next = parent.GetNextItem(current, ArrowDirection.Up)) != null
-                    && next.GetIndex() < current.GetIndex()
-                    && next.Text != "-"
+                    (next = current.GetPrevItem()) != null
+                    && !(next.Text == "-" || next is ToolStripSeparator)
                 )
             {
                 current = next;
@@ -92,9 +90,8 @@ namespace ScintillaNET_Kitchen
             // find next items
             current = this;
             while (
-                    (next = parent.GetNextItem(current, ArrowDirection.Down)) != null
-                    && next.GetIndex() > current.GetIndex()
-                    && next.Text != "-"
+                    (next = current.GetNextItem()) != null
+                    && !(next.Text == "-" || next is ToolStripSeparator)
                 )
             {
                 current = next;
@@ -111,6 +108,19 @@ namespace ScintillaNET_Kitchen
         public static int GetIndex(this ToolStripItem item)
         {
             return item.GetCurrentParent().Items.IndexOf(item);
+        }
+
+        public static ToolStripItem GetPrevItem(this ToolStripItem item)
+        {
+            var i = item.GetIndex() - 1;
+            return i < 0 ? null : item.GetCurrentParent().Items[i];
+        }
+
+        public static ToolStripItem GetNextItem(this ToolStripItem item)
+        {
+            var i = item.GetIndex() + 1;
+            var c = item.GetCurrentParent().Items.Count;
+            return i >= c ? null : item.GetCurrentParent().Items[i];
         }
     }
 }

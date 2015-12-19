@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using ScintillaNET_Kitchen;
 
 namespace ScintillaNET_KitchenTest
@@ -9,7 +8,7 @@ namespace ScintillaNET_KitchenTest
     public class ScintillaExTest
     {
         [TestMethod]
-        public void KeywordsTest()
+        public void TestKeywordSetChanges()
         {
             var sci = new ScintillaEx();
 
