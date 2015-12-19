@@ -25,7 +25,7 @@ namespace ScintillaNET_Kitchen.Forms
             scintilla1.Text = "";
 
             lexerToolStripMenuItem.DropDownItems.AddRange(
-                Enum.GetNames(typeof(ScintillaNET.Lexer))
+                Enum.GetNames(typeof(Lexer))
                     .OrderBy(m => m)
                     .Select(m => new ToolStripMenuRadioItem(m)
                     {
@@ -35,22 +35,22 @@ namespace ScintillaNET_Kitchen.Forms
             );
 
             scintilla2.StyleResetDefault();
-            scintilla2.Styles[ScintillaNET.Style.Default].Font = "Consolas";
-            scintilla2.Styles[ScintillaNET.Style.Default].Size = 10;
+            scintilla2.Styles[Style.Default].Font = "Consolas";
+            scintilla2.Styles[Style.Default].Size = 10;
             scintilla2.StyleClearAll();
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Default].ForeColor = Color.Silver;
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Comment].ForeColor = Color.FromArgb(0, 128, 0);
-            scintilla2.Styles[ScintillaNET.Style.Cpp.CommentLine].ForeColor = Color.FromArgb(0, 128, 0);
-            scintilla2.Styles[ScintillaNET.Style.Cpp.CommentLineDoc].ForeColor = Color.FromArgb(128, 128, 128);
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Number].ForeColor = Color.Olive;
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Word].ForeColor = Color.Blue;
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Word2].ForeColor = Color.Blue;
-            scintilla2.Styles[ScintillaNET.Style.Cpp.String].ForeColor = Color.FromArgb(163, 21, 21);
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Character].ForeColor = Color.FromArgb(163, 21, 21);
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Verbatim].ForeColor = Color.FromArgb(163, 21, 21);
-            scintilla2.Styles[ScintillaNET.Style.Cpp.StringEol].BackColor = Color.Pink;
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Operator].ForeColor = Color.Purple;
-            scintilla2.Styles[ScintillaNET.Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
+            scintilla2.Styles[Style.Cpp.Default].ForeColor = Color.Silver;
+            scintilla2.Styles[Style.Cpp.Comment].ForeColor = Color.FromArgb(0, 128, 0);
+            scintilla2.Styles[Style.Cpp.CommentLine].ForeColor = Color.FromArgb(0, 128, 0);
+            scintilla2.Styles[Style.Cpp.CommentLineDoc].ForeColor = Color.FromArgb(128, 128, 128);
+            scintilla2.Styles[Style.Cpp.Number].ForeColor = Color.Olive;
+            scintilla2.Styles[Style.Cpp.Word].ForeColor = Color.Blue;
+            scintilla2.Styles[Style.Cpp.Word2].ForeColor = Color.Blue;
+            scintilla2.Styles[Style.Cpp.String].ForeColor = Color.FromArgb(163, 21, 21);
+            scintilla2.Styles[Style.Cpp.Character].ForeColor = Color.FromArgb(163, 21, 21);
+            scintilla2.Styles[Style.Cpp.Verbatim].ForeColor = Color.FromArgb(163, 21, 21);
+            scintilla2.Styles[Style.Cpp.StringEol].BackColor = Color.Pink;
+            scintilla2.Styles[Style.Cpp.Operator].ForeColor = Color.Purple;
+            scintilla2.Styles[Style.Cpp.Preprocessor].ForeColor = Color.Maroon;
 
             this.UpdateResult();
         }
@@ -62,8 +62,8 @@ namespace ScintillaNET_Kitchen.Forms
         public void UpdateResult()
         {
             var text = new StringBuilder();
-            var lexerName = Enum.GetName(typeof(ScintillaNET.Lexer), scintilla1.Lexer);
-            var defaultStyle = scintilla1.Styles[ScintillaNET.Style.Default];
+            var lexerName = Enum.GetName(typeof(Lexer), scintilla1.Lexer);
+            var defaultStyle = scintilla1.Styles[Style.Default];
             var styleType = defaultStyle.GetType();
 
             // TODO somehow force scintilla to refresh (otherwise ui doesn't match user selection for some reason)
@@ -123,7 +123,7 @@ namespace ScintillaNET_Kitchen.Forms
             { typeof(String).FullName, m => "@\"" + m.ToString() + "\"" },
             { typeof(int).FullName, m => m.ToString() },
             { typeof(float).FullName, m => m.ToString() },
-            { typeof(ScintillaNET.StyleCase).FullName, m => "ScintillaNET.StyleCase." + Enum.GetName(typeof(ScintillaNET.StyleCase), m) },
+            { typeof(StyleCase).FullName, m => "ScintillaNET.StyleCase." + Enum.GetName(typeof(StyleCase), m) },
         };
 
         private string SerializeValue(object value)
@@ -138,10 +138,10 @@ namespace ScintillaNET_Kitchen.Forms
             return this.typeSerializers[typeName](value);
         }
 
-        private Dictionary<int, string> GetLexerStyles(ScintillaNET.Lexer lexer)
+        private Dictionary<int, string> GetLexerStyles(Lexer lexer)
         {
-            var lexerName = Enum.GetName(typeof(ScintillaNET.Lexer), lexer);
-            var lexerType = Type.GetType(typeof(ScintillaNET.Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + lexerName));
+            var lexerName = Enum.GetName(typeof(Lexer), lexer);
+            var lexerType = Type.GetType(typeof(Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + lexerName));
             return lexerType == null
                 ? new Dictionary<int, string>()
                 : lexerType
@@ -254,8 +254,8 @@ namespace ScintillaNET_Kitchen.Forms
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var defaultStyle = scintilla1.Styles[ScintillaNET.Style.Default];
-            var styleType = typeof(ScintillaNET.Style);
+            var defaultStyle = scintilla1.Styles[Style.Default];
+            var styleType = typeof(Style);
 
             foreach (var item in this.GetLexerStyles(scintilla1.Lexer))
             {
@@ -319,11 +319,11 @@ namespace ScintillaNET_Kitchen.Forms
         private void lexerToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             var currentLexer = e.ClickedItem.Text;
-            scintilla1.Lexer = (ScintillaNET.Lexer)Enum.Parse(typeof(ScintillaNET.Lexer), currentLexer);
+            scintilla1.Lexer = (Lexer)Enum.Parse(typeof(Lexer), currentLexer);
 
             toolStripComboBox1.Items.Clear();
 
-            var lexerType = Type.GetType(typeof(ScintillaNET.Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + currentLexer));
+            var lexerType = Type.GetType(typeof(Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + currentLexer));
 
             if (lexerType != null)
             {
