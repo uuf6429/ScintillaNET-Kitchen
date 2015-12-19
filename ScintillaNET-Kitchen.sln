@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScintillaNET-Kitchen", "ScintillaNET-Kitchen.csproj", "{311BA395-3008-4CBC-A23E-7B64F0B7608F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScintillaNET-KitchenTest", "Tests\ScintillaNET-KitchenTest.csproj", "{92FBD25F-A66D-4D7F-A5E8-244FAC5E76AB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{311BA395-3008-4CBC-A23E-7B64F0B7608F} = {311BA395-3008-4CBC-A23E-7B64F0B7608F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{311BA395-3008-4CBC-A23E-7B64F0B7608F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{311BA395-3008-4CBC-A23E-7B64F0B7608F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{311BA395-3008-4CBC-A23E-7B64F0B7608F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92FBD25F-A66D-4D7F-A5E8-244FAC5E76AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92FBD25F-A66D-4D7F-A5E8-244FAC5E76AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92FBD25F-A66D-4D7F-A5E8-244FAC5E76AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92FBD25F-A66D-4D7F-A5E8-244FAC5E76AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

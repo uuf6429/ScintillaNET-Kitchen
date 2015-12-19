@@ -374,10 +374,15 @@ namespace ScintillaNET_Kitchen
                 "E00000", "00E000", "0000E0", "E0E000", "E000E0", "00E0E0", "000000",
             };
 
+            int i = 0;
             this.GetLexerStyles(scintilla1.Lexer)
                 .Where(s => s.Value != "Default")
                 .All(s => {
-                    scintilla1.Styles[s.Key].ForeColor = ColorTranslator.FromHtml("#" + colourValues[s.Key]);
+                    if (i < colourValues.Length)
+                    {
+                        scintilla1.Styles[s.Key].ForeColor = ColorTranslator.FromHtml("#" + colourValues[i]);
+                        i++;
+                    }
                     return true;
                 });
 
