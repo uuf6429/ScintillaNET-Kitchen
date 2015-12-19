@@ -1,7 +1,12 @@
-﻿using System;
+﻿using Microsoft.CSharp;
+using ScintillaNET;
+using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -18,8 +23,16 @@ namespace ScintillaNET_Kitchen
             InitializeComponent();
 
             scintilla1.Text = "";
-            comboBox1.Items.AddRange(Enum.GetNames(typeof(ScintillaNET.Lexer)));
-            comboBox1.Text = "Null";
+
+            lexerToolStripMenuItem.DropDownItems.AddRange(
+                Enum.GetNames(typeof(ScintillaNET.Lexer))
+                    .OrderBy(m => m)
+                    .Select(m => new ToolStripMenuRadioItem(m)
+                    {
+                        CheckState = m == "Null" ? CheckState.Checked : CheckState.Unchecked
+                    })
+                    .ToArray()
+            );
 
             scintilla2.StyleResetDefault();
             scintilla2.Styles[ScintillaNET.Style.Default].Font = "Consolas";
@@ -65,7 +78,7 @@ namespace ScintillaNET_Kitchen
                     var prop = styleType.GetProperty(styleKey);
                     var oldValue = prop.GetValue(defaultStyle, null);
                     var newValue = prop.GetValue(scintilla1.Styles[item.Key], null);
-                    if (oldValue.ToString() != newValue.ToString() && !(styleKey == "Font" && newValue.ToString() == ""))
+                    if (oldValue.ToString() != newValue.ToString() && !(styleKey == "Font" && String.IsNullOrEmpty(newValue.ToString())))
                     {
                         var serializedValue = this.SerializeValue(newValue);
                         if (serializedValue != null)
@@ -82,14 +95,15 @@ namespace ScintillaNET_Kitchen
             {
                 var keywords = (row.Cells[1].Value ?? "").ToString();
                 scintilla1.SetKeywords(row.Index, keywords);
-                if (keywords != "") keywordSets.Add(row.Index, keywords);
+                if (String.IsNullOrEmpty(keywords)) keywordSets.Add(row.Index, keywords);
             }
 
             if (keywordSets.Any())
             {
                 text.AppendLine();
                 foreach (var item in keywordSets)
-                    text.AppendLine("scintilla1.SetKeywords(" + item.Key + ", @\"" + item.Value + "\");");
+                    if (!String.IsNullOrEmpty(item.Value))
+                        text.AppendLine("scintilla1.SetKeywords(" + item.Key + ", @\"" + item.Value + "\");");
             }
 
             scintilla2.ReadOnly = false;
@@ -141,20 +155,175 @@ namespace ScintillaNET_Kitchen
         
         // TODO maybe get this from styleType?
         private string[] styleKeys = new string[] {
-                "BackColor", "Bold", "Case", "FillLine", "Font", "ForeColor", "Hotspot", "Italic", "Size", "SizeF", "Underline", "Visible", "Weight",
+            "BackColor", "Bold", "Case", "FillLine", "Font", "ForeColor", "Hotspot", "Italic", "Size", "SizeF", "Underline", "Visible", "Weight",
         };
+
+        private void ExecuteCode(string code, Dictionary<string, object> args, Type[] requiredTypes)
+        {
+            var errors = new List<string>();
+
+            try
+            {
+                var programCode = new List<string>();
+                var className = "SNK_Loader_" + Guid.NewGuid().ToString("N");
+                var ctorArgs = args.Select(m => ((m.Value == null) ? "object" : m.Value.GetType().Name) + " " + m.Key);
+
+                // build program code
+                programCode.AddRange(
+                    requiredTypes
+                        .Select(t => "using " + t.Namespace + ";")
+                        .Distinct()
+                        .OrderBy(s => s)
+                );
+                programCode.AddRange(new string[] {
+                    "",
+                    "namespace ScintillaNET_Kitchen",
+                    "{",
+                    "    public class " + className,
+                    "    {",
+                    "        public " + className + "( " + String.Join(", ", ctorArgs) + " )",
+                    "        {",
+                    "",
+                    code,
+                    "",
+                    "        }",
+                    "    }",
+                    "}",
+                });
+
+                // load, compile and execute
+                var csc = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v3.5" } });
+                var results = csc.CompileAssemblyFromSource(
+                    new CompilerParameters(
+                        requiredTypes.Select(t => t.Assembly.Location).Distinct().ToArray()
+                    )
+                    {
+                        GenerateExecutable = false,
+                        GenerateInMemory = true,
+                        TreatWarningsAsErrors = true,
+                    },
+                    String.Join(Environment.NewLine, programCode)
+                );
+                errors.AddRange(results.Errors.Cast<CompilerError>().Select(e => "Error " + e.ErrorNumber + ": " + e.ErrorText));
+
+                var classType = results.CompiledAssembly.GetType("ScintillaNET_Kitchen." + className);
+                Activator.CreateInstance(classType, args.Select(a => a.Value).ToArray());
+            }
+            catch (Exception ex)
+            {
+                errors.Add(ex.ToString());
+            }
+
+            if (errors.Any())
+            {
+                MessageBox.Show(
+                    "Error loading C# file:\n\u2022 " + String.Join("\n\u2022 ", errors),
+                    Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Warning
+                );
+            }
+        }
 
         #endregion
 
         #region Event Handlers
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            scintilla1.Lexer = (ScintillaNET.Lexer)Enum.Parse(typeof(ScintillaNET.Lexer), comboBox1.Text);
+            var pos = Int32.Parse(toolStripComboBox1.Text.Split(new char[] { ':' })[0]);
+            propertyGrid1.SelectedObject = scintilla1.Styles[pos];
+        }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            this.UpdateResult();
+        }
+
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            this.UpdateResult();
+        }
+
+        private void menuStrip1_Resize(object sender, EventArgs e)
+        {
+            toolStripComboBox1.Width = menuStrip1.Width - toolStripMenuItem1.Width - 8;
+        }
+
+        #endregion
+
+        #region Menu Event Handlers
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var defaultStyle = scintilla1.Styles[ScintillaNET.Style.Default];
+            var styleType = typeof(ScintillaNET.Style);
+
+            foreach (var item in this.GetLexerStyles(scintilla1.Lexer))
+            {
+                foreach (var styleKey in styleKeys)
+                {
+                    var prop = styleType.GetProperty(styleKey);
+                    prop.SetValue(scintilla1.Styles[item.Key], prop.GetValue(defaultStyle, null), null);
+                }
+            }
+
+            this.UpdateResult();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                // update ui
+                newToolStripMenuItem_Click(sender, e);
+
+                // update save dialog
+                saveFileDialog1.FileName = openFileDialog1.FileName;
+                saveFileDialog1.InitialDirectory = Path.GetFullPath(openFileDialog1.FileName);
+
+                // load new code
+                this.ExecuteCode(
+                    File.ReadAllText(openFileDialog1.FileName),
+                    new Dictionary<string, object>() { { "scintilla1", scintilla1 }, },
+                    new Type[] {
+                        typeof(Color),
+                        typeof(Control),
+                        typeof(Component),
+                        typeof(Scintilla),
+                        typeof(ScintillaEx),
+                    }
+                );
+
+                // reload ui
+                this.UpdateResult();
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                // update open dialog
+                openFileDialog1.FileName = saveFileDialog1.FileName;
+                openFileDialog1.InitialDirectory = Path.GetFullPath(saveFileDialog1.FileName);
+
+                // save code to file
+                File.WriteAllText(saveFileDialog1.FileName, scintilla2.Text);
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void lexerToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            var currentLexer = e.ClickedItem.Text;
+            scintilla1.Lexer = (ScintillaNET.Lexer)Enum.Parse(typeof(ScintillaNET.Lexer), currentLexer);
 
             toolStripComboBox1.Items.Clear();
 
-            var lexerType = Type.GetType(typeof(ScintillaNET.Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + comboBox1.Text));
+            var lexerType = Type.GetType(typeof(ScintillaNET.Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + currentLexer));
 
             if (lexerType != null)
             {
@@ -187,49 +356,13 @@ namespace ScintillaNET_Kitchen
             this.UpdateResult();
         }
 
-        private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var pos = Int32.Parse(toolStripComboBox1.Text.Split(new char[] { ':' })[0]);
-            propertyGrid1.SelectedObject = scintilla1.Styles[pos];
+            new AboutForm().ShowDialog();
         }
-
-        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
-        {
-            this.UpdateResult();
-        }
-
-        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            this.UpdateResult();
-        }
-
-        private void menuStrip1_Resize(object sender, EventArgs e)
-        {
-            toolStripComboBox1.Width = menuStrip1.Width - toolStripMenuItem1.Width - 4;
-        }
-
-        private void resetStylesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var defaultStyle = scintilla1.Styles[ScintillaNET.Style.Default];
-            var styleType = typeof(ScintillaNET.Style);
-
-            foreach (var item in this.GetLexerStyles(scintilla1.Lexer))
-            {
-                foreach (var styleKey in styleKeys)
-                {
-                    var prop = styleType.GetProperty(styleKey);
-                    prop.SetValue(scintilla1.Styles[item.Key], prop.GetValue(defaultStyle, null), null);
-                }
-            }
-
-            this.UpdateResult();
-        }
-
-        private Random colorRng = new Random(2);
 
         private void prefillForeColorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var styleType = typeof(ScintillaNET.Style);
             string[] colourValues = new string[] {
                 "FF0000", "00FF00", "0000FF", "FFFF00", "FF00FF", "00FFFF", "800000",
                 "008000", "000080", "808000", "800080", "008080", "808080", "C00000",
