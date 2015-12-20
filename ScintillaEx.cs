@@ -53,16 +53,21 @@ namespace ScintillaNET_Kitchen
 
         #region Utility Methods
 
-        private void UpdateLineMargin()
+        protected virtual void UpdateLineMargin()
         {
-            var lineMarginChars = this.ShowLineMargin ? 0 : this.Lines.Count.ToString().Length;
+            var lineMarginChars = this.ShowLineMargin ? this.Lines.Count.ToString().Length : 0;
             if (lineMarginChars != this.maxLineNumberCharLength)
             {
-                const int padding = 2;
-                this.Margins[0].Width = !this.ShowLineMargin ? 0
-                    : this.TextWidth(Style.LineNumber, new string('9', lineMarginChars + 1)) + padding;
-                this.maxLineNumberCharLength = lineMarginChars;
+                this.DoUpdateLineMargin(lineMarginChars);
             }
+        }
+
+        protected virtual void DoUpdateLineMargin(int lineMarginChars)
+        {
+            const int padding = 2;
+            this.Margins[0].Width = !this.ShowLineMargin ? 0
+                : this.TextWidth(Style.LineNumber, new string('9', lineMarginChars + 1)) + padding;
+            this.maxLineNumberCharLength = lineMarginChars;
         }
 
         #endregion

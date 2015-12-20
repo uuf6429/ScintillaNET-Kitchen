@@ -50,7 +50,7 @@ namespace ScintillaNET_KitchenTest
         [TestMethod]
         public void TestCannotGetGetIndexOfDetachedItem()
         {
-            Assert.AreEqual(Item_D.GetIndex(), -1);
+            Assert.AreEqual(-1, Item_D.GetIndex());
         }
 
         [TestMethod]
