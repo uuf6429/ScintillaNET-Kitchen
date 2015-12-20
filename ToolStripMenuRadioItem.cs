@@ -103,11 +103,12 @@ namespace ScintillaNET_Kitchen
         }
     }
 
-    static class ToolStripItemExtensionMethods
+    public static class ToolStripItemExtensionMethods
     {
         public static int GetIndex(this ToolStripItem item)
         {
-            return item.GetCurrentParent().Items.IndexOf(item);
+            var parent = item.GetCurrentParent();
+            return parent == null ? -1 : parent.Items.IndexOf(item);
         }
 
         public static ToolStripItem GetPrevItem(this ToolStripItem item)
