@@ -1,11 +1,13 @@
 ﻿using Microsoft.CSharp;
 using ScintillaNET;
 using System;
+using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -117,28 +119,53 @@ namespace ScintillaNET_Kitchen.Forms
 
         private Dictionary<string, Func<object, string>> typeSerializers = new Dictionary<string, Func<object, string>>()
         {
-            { "null", m => null },
             { typeof(Color).FullName, m => ((Color)m).IsNamedColor ? "Color." + ((Color)m).Name : "Color.FromArgb(" + ((Color)m).ToArgb() + ")" },
-            { typeof(Boolean).FullName, m => (Boolean)m ? "true" : "false" },
-            { typeof(String).FullName, m => "@\"" + m.ToString() + "\"" },
-            { typeof(int).FullName, m => m.ToString() },
-            { typeof(float).FullName, m => m.ToString() },
-            { typeof(StyleCase).FullName, m => "ScintillaNET.StyleCase." + Enum.GetName(typeof(StyleCase), m) },
+//            { typeof(StyleCase).FullName, m => "ScintillaNET.StyleCase." + Enum.GetName(typeof(StyleCase), m) },
         };
 
-        private string SerializeValue(object value)
+        protected string SerializeValue(object value)
         {
-            var typeName = value == null ? "null" : value.GetType().FullName;
-
-            if (!this.typeSerializers.ContainsKey(typeName))
+            if (value == null)
             {
-                throw new NotImplementedException("Cannot serialize value of type " + value.GetType().Name + ".");
+                // code generation for null - nothing fancy here
+                return "null";
             }
 
-            return this.typeSerializers[typeName](value);
+            var type = value.GetType();
+
+            if (this.typeSerializers.ContainsKey(type.FullName))
+            {
+                // code generation by custom handler
+                return this.typeSerializers[type.FullName](value);
+            }
+            else
+            {
+                try
+                {
+                    if (value is Enum)
+                    {
+                        // code generation for enums
+                        return type.FullName + "." + Enum.GetName(type, value);
+                    }
+                    else
+                    {
+                        // code generation using codedom - works for most simple types
+                        var w = new StringWriter();
+                        var e = new CodePrimitiveExpression(value);
+                        var o = new CodeGeneratorOptions();
+                        var p = new CSharpCodeProvider();
+                        p.GenerateCodeFromExpression(e, w, o);
+                        return w.ToString();
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new NotImplementedException("Cannot serialize value of type " + type.Name + ".", ex);
+                }
+            }
         }
 
-        private Dictionary<int, string> GetLexerStyles(Lexer lexer)
+        protected Dictionary<int, string> GetLexerStyles(Lexer lexer)
         {
             var lexerName = Enum.GetName(typeof(Lexer), lexer);
             var lexerType = Type.GetType(typeof(Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + lexerName));

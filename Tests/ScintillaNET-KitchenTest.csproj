@@ -58,6 +58,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Forms\MainFormTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScintillaExTest.cs" />
     <Compile Include="ToolStripMenuRadioItemTest.cs" />
