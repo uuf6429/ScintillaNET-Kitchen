@@ -19,4 +19,4 @@ Thi software requires .NET 4.0 (Client Profile) and the ScintillaNET NuGet packa
 Screenshot(s)
 -------------
 
-![Screenshot](http://i.imgur.com/no9VOS6.png)
+![Screenshot](https://raw.githubusercontent.com/uuf6429/ScintillaNET-Kitchen/master/screenshot.png)
