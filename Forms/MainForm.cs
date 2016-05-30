@@ -117,6 +117,41 @@ namespace ScintillaNET_Kitchen.Forms
 
         #region Utility Methods
 
+        private void LoadLexerStyles(Lexer lexer)
+        {
+            toolStripComboBox1.Items.Clear();
+
+            var lexerType = Type.GetType(typeof(Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + lexer));
+
+            if (lexerType != null)
+            {
+                toolStripComboBox1.Items
+                    .AddRange(
+                        this.GetLexerStyles(scintilla1.Lexer)
+                            .Select(m => m.Key + ": " + m.Value)
+                            .ToArray()
+                    );
+            }
+
+            propertyGrid1.SelectedObject = null;
+
+            dataGridView1.Rows.Clear();
+
+            dataGridView1.Rows.AddRange(
+                scintilla1
+                    .DescribeKeywordSets()
+                    .Split(new string[] { "\n" }, StringSplitOptions.None)
+                    .Select((s, i) =>
+                    {
+                        var row = new DataGridViewRow();
+                        row.Cells.Add(new DataGridViewTextBoxCell() { Value = s });
+                        row.Cells.Add(new DataGridViewTextBoxCell() { Value = scintilla1.GetKeywords(i).Trim() });
+                        return row;
+                    })
+                    .ToArray()
+            );
+        }
+
         private Dictionary<string, Func<object, string>> typeSerializers = new Dictionary<string, Func<object, string>>()
         {
             { typeof(Color).FullName, m => ((Color)m).IsNamedColor ? "Color." + ((Color)m).Name : "Color.FromArgb(" + ((Color)m).ToArgb() + ")" },
@@ -325,6 +360,7 @@ namespace ScintillaNET_Kitchen.Forms
                 foreach(ToolStripMenuRadioItem item in lexerToolStripMenuItem.DropDownItems)
                     if(item!=null)
                         item.Checked = item.Text == lexerText;
+                this.LoadLexerStyles(scintilla1.Lexer);
 
                 // reload ui
                 this.UpdateResult();
@@ -351,41 +387,8 @@ namespace ScintillaNET_Kitchen.Forms
 
         private void lexerToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            var currentLexer = e.ClickedItem.Text;
-            scintilla1.Lexer = (Lexer)Enum.Parse(typeof(Lexer), currentLexer);
-
-            toolStripComboBox1.Items.Clear();
-
-            var lexerType = Type.GetType(typeof(Style).AssemblyQualifiedName.Replace(".Style", ".Style+" + currentLexer));
-
-            if (lexerType != null)
-            {
-                toolStripComboBox1.Items
-                    .AddRange(
-                        this.GetLexerStyles(scintilla1.Lexer)
-                            .Select(m => m.Key + ": " + m.Value)
-                            .ToArray()
-                    );
-            }
-
-            propertyGrid1.SelectedObject = null;
-
-            dataGridView1.Rows.Clear();
-
-            dataGridView1.Rows.AddRange(
-                scintilla1
-                    .DescribeKeywordSets()
-                    .Split(new string[] { "\n" }, StringSplitOptions.None)
-                    .Select((s, i) =>
-                    {
-                        var row = new DataGridViewRow();
-                        row.Cells.Add(new DataGridViewTextBoxCell() { Value = s });
-                        row.Cells.Add(new DataGridViewTextBoxCell() { Value = scintilla1.GetKeywords(i).Trim() });
-                        return row;
-                    })
-                    .ToArray()
-            );
-
+            scintilla1.Lexer = (Lexer)Enum.Parse(typeof(Lexer), e.ClickedItem.Text);
+            this.LoadLexerStyles(scintilla1.Lexer);
             this.UpdateResult();
         }
 
