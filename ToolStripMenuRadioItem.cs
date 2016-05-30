@@ -61,13 +61,14 @@ namespace ScintillaNET_Kitchen
 
         private void Initialize()
         {
-            this.CheckOnClick = true;
             this.Click += ToolStripMenuRadioItem_Click;
         }
 
         private void ToolStripMenuRadioItem_Click(object sender, EventArgs e)
         {
-            foreach (var item in this.FindItemsInSameGroup()) item.CheckState = CheckState.Unchecked;
+            foreach (var item in this.FindItemsInSameGroup())
+                item.CheckState = CheckState.Unchecked;
+            this.Checked = true;
         }
 
         protected ToolStripMenuRadioItem[] FindItemsInSameGroup()
