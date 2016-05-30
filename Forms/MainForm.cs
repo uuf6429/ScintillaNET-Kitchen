@@ -320,6 +320,12 @@ namespace ScintillaNET_Kitchen.Forms
                     }
                 );
 
+                // select lexer
+                var lexerText = scintilla1.Lexer.ToString();
+                foreach(ToolStripMenuRadioItem item in lexerToolStripMenuItem.DropDownItems)
+                    if(item!=null)
+                        item.Checked = item.Text == lexerText;
+
                 // reload ui
                 this.UpdateResult();
             }
