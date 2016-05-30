@@ -89,6 +89,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="appveyor.yml" />
+    <None Include="codecov.yml" />
     <None Include="LICENSE" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
