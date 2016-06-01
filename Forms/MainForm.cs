@@ -97,7 +97,7 @@ namespace ScintillaNET_Kitchen.Forms
             {
                 var keywords = (row.Cells[1].Value ?? "").ToString();
                 scintilla1.SetKeywords(row.Index, keywords);
-                if (String.IsNullOrEmpty(keywords)) keywordSets.Add(row.Index, keywords);
+                if (String.IsNullOrEmpty(keywords) == false) keywordSets.Add(row.Index, keywords);
             }
 
             if (keywordSets.Any())
